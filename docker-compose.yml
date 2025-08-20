@@ -1,0 +1,47 @@
+version: "3.9"
+
+services:
+  backend:
+    build: ./expensy_backend
+    container_name: expensy_backend
+    ports:
+      - "8706:8706"
+    env_file:
+      - ./expensy_backend/.env
+    depends_on:
+      - mongo
+      - redis
+
+  frontend:
+    build: ./expensy_frontend
+    container_name: expensy_frontend
+    ports:
+      - "3000:3000"
+    env_file:
+      - ./expensy_frontend/.env
+    depends_on:
+      - backend
+
+  mongo:
+    image: mongo:6.0
+    container_name: expensy_mongo
+    restart: always
+#   ports:
+#      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+  redis:
+    image: redis:7.2
+    container_name: expensy_redis
+    restart: always
+#    ports:
+#      - "6379:6379"
+    command: ["redis-server", "--requirepass", "expensy123"] # 👈 protegemos Redis
+    volumes:
+      - redis_data:/data
+
+volumes:
+  mongo_data:
+  redis_data:
+
